@@ -1,0 +1,16 @@
+# SHL Assessment Agent — Python dependencies
+# Install: pip install -r requirment.txt
+#
+# Optional: use faiss-gpu instead of faiss-cpu if you have CUDA set up.
+
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+
+faiss-cpu>=1.8.0
+numpy>=1.24.0,<3.0.0
+
+sentence-transformers>=3.0.0
+
+groq>=0.4.0

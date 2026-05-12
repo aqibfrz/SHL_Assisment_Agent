@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- When hosting this UI on another origin, set to your API root, e.g. http://127.0.0.1:8080 -->
+    <meta name="api-base" content="" />
+    <title>SHL Assessment Assistant</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="header">
+        <div class="brand">
+          <span class="logo" aria-hidden="true"></span>
+          <div>
+            <h1>SHL Assessment Assistant</h1>
+            <p class="tagline">Scoped to the SHL catalog — recommendations stay grounded.</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <span id="healthPill" class="pill muted" aria-live="polite">Checking API…</span>
+          <button type="button" id="clearBtn" class="btn ghost">New chat</button>
+        </div>
+      </header>
+
+      <main class="main">
+        <div id="thread" class="thread" aria-live="polite"></div>
+        <div id="composerWrap" class="composer-wrap">
+          <form id="form" class="composer" autocomplete="off">
+            <label class="sr-only" for="input">Your message</label>
+            <textarea
+              id="input"
+              class="textarea"
+              rows="2"
+              placeholder="Paste a job description, ask for a comparison, or refine constraints (e.g. add personality measures)…"
+            ></textarea>
+            <button type="submit" class="btn primary" id="sendBtn">
+              Send
+            </button>
+          </form>
+          <p class="fineprint">
+            URLs in suggestions come from your indexed catalog only. Not legal / general HR advice.
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <template id="tplMsg">
+      <article class="msg">
+        <div class="msg-meta"></div>
+        <div class="msg-body"></div>
+      </article>
+    </template>
+
+    <script src="/assets/app.js" defer></script>
+  </body>
+</html>
