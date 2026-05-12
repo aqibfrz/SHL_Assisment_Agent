@@ -28,7 +28,7 @@ def extract_test_type(item):
     if item.get("type"):
         return item["type"]
 
-    # 🔥 Try nested structure
+    # Try nested structure
     if "categories" in item:
         for cat in item["categories"]:
             name = cat.get("name", "").lower()
@@ -81,7 +81,7 @@ def build_index():
     with open("data/SHL_catalogue.json", encoding="utf-8") as f:
         raw_data = json.load(f)
 
-    # 🔥 IMPORTANT: extract correct level
+    # IMPORTANT: extract correct level
     products = extract_products(raw_data)
 
     print(f"📦 Found {len(products)} raw items")
