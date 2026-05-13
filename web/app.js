@@ -153,7 +153,16 @@ formEl.addEventListener("submit", async (e) => {
 
     if (!res.ok) {
       const errTxt = await res.text();
-      throw new Error(errTxt || res.statusText);
+      let detail = errTxt || res.statusText;
+      try {
+        const j = JSON.parse(errTxt);
+        if (j && typeof j.detail === "string") detail = j.detail;
+        else if (Array.isArray(j.detail))
+          detail = j.detail.map((x) => (typeof x.msg === "string" ? x.msg : JSON.stringify(x))).join("; ");
+      } catch {
+        /* plain text / HTML */
+      }
+      throw new Error(detail);
     }
 
     const data = await res.json();

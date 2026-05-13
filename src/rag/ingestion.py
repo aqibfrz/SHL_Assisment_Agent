@@ -15,7 +15,7 @@ def extract_products(raw_data):
         if key in raw_data:
             return raw_data[key]
 
-    raise ValueError("❌ Could not find product list in JSON")
+    raise ValueError("Could not find product list in JSON")
 
 def extract_test_type(item):
     # Try common keys
@@ -76,7 +76,7 @@ def normalize_catalog(data):
 
 def build_index():
     reset_index()
-    print("🔄 Loading dataset...")
+    print("Loading dataset...")
 
     with open("data/SHL_catalogue.json", encoding="utf-8") as f:
         raw_data = json.load(f)
@@ -84,7 +84,7 @@ def build_index():
     # IMPORTANT: extract correct level
     products = extract_products(raw_data)
 
-    print(f"📦 Found {len(products)} raw items")
+    print(f"Found {len(products)} raw items")
 
     data = normalize_catalog(products)
 
@@ -94,4 +94,4 @@ def build_index():
     add_embeddings(vectors, data)
     save_index()
 
-    print("✅ FAISS index built successfully")
+    print("FAISS index built successfully")
