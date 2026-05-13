@@ -17,7 +17,7 @@ import uvicorn
 
 
 def main() -> None:
-    port = int(os.environ.get("PORT", "7860"))
+    port = int(os.environ.get("PORT", "8080"))
     host = os.environ.get("HOST", "0.0.0.0")
     reload_env = os.environ.get("UVICORN_RELOAD", "").lower()
     reload = reload_env in ("1", "true", "yes")
