@@ -1,19 +1,13 @@
-# fastapi
-# uvicorn
-# python-dotenv
-# pydantic
+fastapi>=0.110
+uvicorn[standard]>=0.27
+python-dotenv>=1.0
+pydantic>=2.6
 
-# sentence-transformers==2.7.0
-# faiss-cpu
+groq>=0.9
 
-# transformers==4.41.1
+sentence-transformers>=2.7
+faiss-cpu>=1.8
+numpy>=1.26
 
-# --extra-index-url https://download.pytorch.org/whl/cpu
-# torch==2.2.2+cpu
-
-# groq
-
-sentence-transformers
-faiss-cpu
-transformers
-torch
+torch==2.2.2+cpu
+--extra-index-url https://download.pytorch.org/whl/cpu
