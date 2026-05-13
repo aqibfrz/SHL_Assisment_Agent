@@ -30,13 +30,26 @@ async function pingHealth() {
     healthPill.className = "pill bad";
     return;
   }
+  const path = apiUrl("/health");
   try {
-    const r = await fetch(apiUrl("/health"), { method: "GET" });
+    healthPill.textContent = "Checking API…";
+    const ctrl = new AbortController();
+    const coldStartMs = 90000;
+    const t = setTimeout(() => ctrl.abort(), coldStartMs);
+    const r = await fetch(path, { method: "GET", signal: ctrl.signal });
+    clearTimeout(t);
     if (!r.ok) throw new Error("bad status");
     healthPill.textContent = "API ready";
     healthPill.className = "pill ok";
-  } catch {
-    healthPill.textContent = "API unreachable";
+    healthPill.removeAttribute("title");
+  } catch (e) {
+    const aborted = e instanceof DOMException && e.name === "AbortError";
+    healthPill.textContent = aborted
+      ? "Still waking — refresh soon"
+      : "API unreachable";
+    healthPill.title = aborted
+      ? "Free hosts can take 1–2 min after sleep. Open /health in a new tab or refresh."
+      : `Could not load ${path}. Is the server running?`;
     healthPill.className = "pill bad";
   }
 }

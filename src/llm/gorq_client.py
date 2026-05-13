@@ -1,26 +1,37 @@
-from groq import Groq
-from dotenv import load_dotenv
+import json
+import logging
 import os
 
-# 🔥 load .env
+from dotenv import load_dotenv
+from groq import Groq
+
 load_dotenv()
 
-api_key = os.getenv("GROQ_API_KEY")
+_log = logging.getLogger(__name__)
+
+api_key = (os.getenv("GROQ_API_KEY") or "").strip()
 
 if not api_key:
     raise ValueError("❌ GROQ_API_KEY not found in .env")
 
 client = Groq(api_key=api_key)
 
+CHAT_MODEL = (os.getenv("GROQ_CHAT_MODEL") or "llama-3.1-8b-instant").strip()
+
 
 def generate_reply(messages, docs=None, mode="recommend"):
     context = ""
 
     if docs:
-        context = "\n".join([
-            f"- {d['name']} ({d.get('test_type', '')}): {str(d.get('description', '') or '')[:280]}"
-            for d in docs
-        ])
+        lines = []
+        for d in docs:
+            if not isinstance(d, dict):
+                continue
+            name = d.get("name") or "Unknown"
+            tt = d.get("test_type") or ""
+            desc = str(d.get("description") or "")[:280]
+            lines.append(f"- {name} ({tt}): {desc}")
+        context = "\n".join(lines)
 
     system_prompt = f"""
 You are an SHL catalog assistant. You only discuss SHL assessments from the provided context.
@@ -40,8 +51,8 @@ Modes:
 """
 
     user_prompt = f"""
-Conversation:
-{messages}
+Conversation (JSON array of messages):
+{json.dumps(messages, ensure_ascii=False)}
 
 Context (catalog excerpts; may be empty):
 {context if context else "(none)"}
@@ -49,13 +60,22 @@ Context (catalog excerpts; may be empty):
 Mode: {mode}
 """
 
-    response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        temperature=0.2
-    )
+    try:
+        response = client.chat.completions.create(
+            model=CHAT_MODEL,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.2,
+        )
+    except Exception as e:
+        _log.warning("Groq chat.completions failed: %s", e, exc_info=True)
+        raise RuntimeError(
+            "Groq API error (check GROQ_API_KEY, model name, and Groq status). "
+            f"Details: {e}"
+        ) from e
 
-    return response.choices[0].message.content
+    content = response.choices[0].message.content
+    out = (content or "").strip()
+    return out if out else "(The model returned an empty reply.)"

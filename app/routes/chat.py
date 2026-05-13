@@ -1,11 +1,13 @@
+import logging
 from typing import List
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from src.agents.controller import handle_chat
 
 router = APIRouter()
+_log = logging.getLogger(__name__)
 
 
 class ChatMessage(BaseModel):
@@ -19,4 +21,11 @@ class ChatRequest(BaseModel):
 
 @router.post("/chat")
 def chat(body: ChatRequest):
-    return handle_chat([m.model_dump() for m in body.messages])
+    try:
+        return handle_chat([m.model_dump() for m in body.messages])
+    except Exception as e:
+        _log.exception("POST /chat failed")
+        raise HTTPException(
+            status_code=502,
+            detail=str(e) or "Chat handler failed",
+        ) from e
