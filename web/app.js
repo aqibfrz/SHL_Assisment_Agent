@@ -23,6 +23,13 @@ const tplMsg = document.getElementById("tplMsg");
 let messages = [];
 
 async function pingHealth() {
+  if (location.protocol === "file:" && !apiBase()) {
+    healthPill.textContent = "Open via server (not this file)";
+    healthPill.title =
+      "Start: python run_api.py then open http://127.0.0.1:8080 — or set meta api-base to your API URL.";
+    healthPill.className = "pill bad";
+    return;
+  }
   try {
     const r = await fetch(apiUrl("/health"), { method: "GET" });
     if (!r.ok) throw new Error("bad status");

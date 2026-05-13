@@ -269,7 +269,7 @@ def handle_chat(messages: list[dict]):
     # --- Compare: always grounded in retrieved catalog rows ---
     if intent == "compare":
         q = compare_search_query(messages)
-        extra = extract_catalog_tokens(last_user)
+        extra = extract_catalog_tokens(messages[-1]["content"])
         if extra:
             q = f"{q} {' '.join(extra)}"
         docs = _dedupe_docs(retrieve_assessments(q, k=8))

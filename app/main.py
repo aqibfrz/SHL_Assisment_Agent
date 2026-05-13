@@ -1,4 +1,9 @@
 import os
+
+# Small containers (e.g. Render 512MB): cap BLAS/thread pools before numpy/onnx load.
+for _k in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
+    os.environ.setdefault(_k, "1")
+
 from contextlib import asynccontextmanager
 from pathlib import Path
 
