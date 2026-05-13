@@ -9,5 +9,13 @@ Render (Web Service) — two different fields:
 Do NOT put "python build_faiss.py" in Start Command. It exits when finished,
 so Render sees no open port and fails with "Application exited early".
 
-Optional env: GROQ_API_KEY, CORS_ORIGINS, HF_TOKEN (Hub rate limits).
+Optional env: CORS_ORIGINS, HF_TOKEN (Hub rate limits).
+
+Required for /chat on the live server:
+  GROQ_API_KEY — set in Render Dashboard → Environment (exact key name).
+  Paste the value only (no "quotes" around it). Save, then Redeploy.
+  Your local .env file is NOT deployed with git; Render never sees it unless
+  you create the same variable in the dashboard.
+
 https://render.com/docs/web-services#port-binding
+https://render.com/docs/configure-environment-variables

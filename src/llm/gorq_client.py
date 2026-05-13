@@ -3,16 +3,31 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from groq import Groq
+from groq import APIStatusError, Groq
 
 load_dotenv()
 
 _log = logging.getLogger(__name__)
 
-api_key = (os.getenv("GROQ_API_KEY") or "").strip()
+
+def _normalize_groq_key(raw: str | None) -> str:
+    """Strip whitespace and common copy-paste mistakes (quoted secrets on Render)."""
+    if not raw:
+        return ""
+    s = raw.strip()
+    # Render / shells: value pasted as "gsk_..." or 'gsk_...'
+    if len(s) >= 2 and s[0] == s[-1] and s[0] in ("'", '"'):
+        s = s[1:-1].strip()
+    return s
+
+
+api_key = _normalize_groq_key(os.getenv("GROQ_API_KEY"))
 
 if not api_key:
-    raise ValueError("❌ GROQ_API_KEY not found in .env")
+    raise ValueError(
+        "GROQ_API_KEY is missing. Add it to .env locally, or on Render: "
+        "Dashboard → Environment → Environment Variables → GROQ_API_KEY (exact name)."
+    )
 
 client = Groq(api_key=api_key)
 
@@ -69,6 +84,17 @@ Mode: {mode}
             ],
             temperature=0.2,
         )
+    except APIStatusError as e:
+        _log.warning("Groq API status error: %s", e, exc_info=True)
+        if e.status_code == 401:
+            raise RuntimeError(
+                "Groq returned 401 Invalid API Key. On Render: Environment → add "
+                "GROQ_API_KEY with your secret only (no surrounding quotes; name must match). "
+                "Redeploy after saving. Local .env is not used on the server unless you set it there."
+            ) from e
+        raise RuntimeError(
+            f"Groq API error (HTTP {e.status_code}). Check model name and Groq status. Details: {e}"
+        ) from e
     except Exception as e:
         _log.warning("Groq chat.completions failed: %s", e, exc_info=True)
         raise RuntimeError(
