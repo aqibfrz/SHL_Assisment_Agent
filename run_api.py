@@ -9,11 +9,19 @@ Cross-origin UI: set `CORS_ORIGINS` (comma-separated, or *) and point the meta
 `api-base` in web/index.html to this server (see comment there). Use `.env` for
 secrets (e.g. GROQ_API_KEY).
 
-Render: set Build Command to build the FAISS index during the image build (fast
-bind on $PORT), e.g.
-  pip install -r requirements.txt && python build_faiss.py
-Otherwise startup runs ingestion inside lifespan and Render may log "No open
-ports detected" until the index finishes.
+Render (Web Service) — use TWO different dashboard fields:
+
+  Build Command (deps + FAISS; process may exit when done — OK here):
+    pip install -r requirements.txt && python build_faiss.py
+
+  Start Command (MUST keep running and bind $PORT — never use build_faiss.py):
+    python run_api.py
+
+Wrong: Start Command = "python build_faiss.py" → script exits → Render reports
+"No open ports" / "Application exited early". See DEPLOY.txt in this repo.
+
+If you skip the build step, lifespan can still build on first start (slower;
+may hit port-scan timeouts on small instances).
 """
 from __future__ import annotations
 

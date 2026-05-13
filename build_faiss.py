@@ -20,6 +20,10 @@ def main() -> None:
     if not catalog.is_file():
         raise SystemExit(f"Missing {catalog} — add the SHL catalog JSON before building.")
     build_index()
+    print(
+        "Done. On Render: use this script only in the BUILD command, not Start. "
+        "Start command must be: python run_api.py"
+    )
 
 
 if __name__ == "__main__":

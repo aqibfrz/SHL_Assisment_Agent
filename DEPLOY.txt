@@ -1,0 +1,13 @@
+Render (Web Service) — two different fields:
+
+  BUILD COMMAND (install + index; no HTTP server; may take a few minutes):
+    pip install -r requirements.txt && python build_faiss.py
+
+  START COMMAND (must stay running and listen on $PORT — use ONLY this):
+    python run_api.py
+
+Do NOT put "python build_faiss.py" in Start Command. It exits when finished,
+so Render sees no open port and fails with "Application exited early".
+
+Optional env: GROQ_API_KEY, CORS_ORIGINS, HF_TOKEN (Hub rate limits).
+https://render.com/docs/web-services#port-binding
